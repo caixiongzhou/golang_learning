@@ -1,0 +1,19 @@
+func twoSum(nums []int, target int) []int {
+    // 创建哈希表，存储 数值->索引 的映射
+    numMap := make(map[int]int)
+    
+    for i, num := range nums {
+        // 计算需要的补数
+        complement := target - num
+        
+        // 检查补数是否在哈希表中
+        if idx, exists := numMap[complement]; exists {
+            return []int{idx, i}
+        }
+        
+        // 将当前数字和索引存入哈希表
+        numMap[num] = i
+    }
+    
+    return nil
+}
