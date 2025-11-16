@@ -1,0 +1,21 @@
+func longestCommonPrefix(strs []string) string {
+	if len(strs) == 0 {
+		return ""
+	}
+
+	// 以第一个字符串作为初始前缀
+	prefix := strs[0]
+
+	// 依次与后面的每个字符串比较
+	for i := 1; i < len(strs); i++ {
+		// 不断缩短前缀，直到成为当前字符串的前缀
+		for strings.Index(strs[i], prefix) != 0 {
+			prefix = prefix[:len(prefix)-1]
+			if prefix == "" {
+				return ""
+			}
+		}
+	}
+
+	return prefix
+}
