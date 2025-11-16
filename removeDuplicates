@@ -1,0 +1,18 @@
+func removeDuplicates(nums []int) int {
+	if len(nums) == 0 {
+		return 0
+	}
+
+	slow := 0 // 慢指针，指向当前唯一元素的末尾
+
+	// 快指针从1开始遍历
+	for fast := 1; fast < len(nums); fast++ {
+		// 当遇到不同的元素时
+		if nums[fast] != nums[slow] {
+			slow++                  // 慢指针前进
+			nums[slow] = nums[fast] // 将新元素放到慢指针位置
+		}
+	}
+
+	return slow + 1 // 返回唯一元素的个数
+}
