@@ -1,0 +1,115 @@
+openapi: 3.0.0
+info:
+  title: Blog System API
+  description: 个人博客系统后端API
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@blog.com
+
+servers:
+  - url: http://localhost:8080/api
+    description: 开发服务器
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Response:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+
+    AuthResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+        token:
+          type: string
+
+    PostResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        excerpt:
+          type: string
+        slug:
+          type: string
+        status:
+          type: string
+        viewCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        publishedAt:
+          type: string
+          format: date-time
+        userId:
+          type: integer
+        tags:
+          type: string
+        author:
+          $ref: '#/components/schemas/AuthorInfo'
+
+    AuthorInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+        avatar:
+          type: string
+
+    CommentResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        content:
+          type: string
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        postId:
+          type: integer
+        userId:
+          type: integer
+        parentId:
+          type: integer
+        author:
+          $ref: '#/components/schemas/AuthorInfo'
+        replies:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommentResponse'

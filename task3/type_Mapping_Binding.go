@@ -19,10 +19,10 @@ import (
 
 // Book 结构体，使用 sqlx 标签精确映射数据库字段
 type Book struct {
-	ID     int    `db:"id" json:"id"`
-	Title  string `db:"title" json:"title"`
-	Author string `db:"author" json:"author"`
-	Price  int    `db:"price" json:"price"`
+	ID     int     `db:"id" json:"id"`
+	Title  string  `db:"title" json:"title"`
+	Author string  `db:"author" json:"author"`
+	Price  float64 `db:"price" json:"price"`
 }
 
 var db *sqlx.DB
@@ -166,6 +166,15 @@ func main() {
 	if err != nil {
 		for i, book := range complexResult {
 			fmt.Printf("%d. 《%s》- %s ￥%.2f\n", i+1, book.Title, book.Author, book.Price) // i+1 的意思是将索引值转换为人类可读的序号,i也可以，从0开始而已
+		}
+	}
+
+	// 3. 按作者查询示例
+	fmt.Println("\n=== 按作者查询示例 ===")
+	authorBooks, err := GetBooksByAuthor("某作者")
+	if err != nil {
+		for i, book := range authorBooks {
+			fmt.Printf("%d. 《%s》- %s ￥%.2f\n", i+1, book.Title, book.Author, book.Price)
 		}
 	}
 }
