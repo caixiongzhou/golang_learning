@@ -1,0 +1,99 @@
+const { ethers } = require("hardhat");
+
+async function main() {
+    console.log("🚀 开始完整的钱包和合约交互测试...\n");
+
+    // 获取测试账户
+    const [signer1, signer2, signer3] = await ethers.getSigners();
+    console.log("📝 测试账户:");
+    console.log("  账户1:", signer1.address);
+    console.log("  账户2:", signer2.address);
+    console.log("  账户3:", signer3.address);
+
+    // 检查初始余额
+    console.log("\n💰 初始余额:");
+    const balance1 = await ethers.provider.getBalance(signer1.address);
+    const balance2 = await ethers.provider.getBalance(signer2.address);
+    console.log("  账户1余额:", ethers.formatEther(balance1), "ETH");
+    console.log("  账户2余额:", ethers.formatEther(balance2), "ETH");
+
+    // 部署合约
+    console.log("\n📄 部署合约...");
+    const TransferDemo = await ethers.getContractFactory("TransferDemo");
+    const transferDemo = await TransferDemo.deploy();
+    await transferDemo.waitForDeployment();
+    const contractAddress = await transferDemo.getAddress();
+    console.log("  合约地址:", contractAddress);
+
+    const contractBalance = await ethers.provider.getBalance(contractAddress);
+    console.log("  合约初始余额:", ethers.formatEther(contractBalance), "ETH");
+
+    // 测试1: 存款到合约
+    console.log("\n1️⃣ 测试存款功能...");
+    const depositAmount = ethers.parseEther("0.5");
+    const depositTx = await transferDemo.deposit({ value: depositAmount });
+    await depositTx.wait();
+    console.log("  ✅ 存款成功:", ethers.formatEther(depositAmount), "ETH");
+
+    // 测试2: 读取存款余额
+    const userBalance = await transferDemo.getBalance(signer1.address);
+    const currentContractBalance = await transferDemo.getContractBalance();
+    console.log("  用户合约余额:", ethers.formatEther(userBalance), "ETH");
+    console.log("  合约总余额:", ethers.formatEther(currentContractBalance), "ETH");
+
+    // 测试3: 账户间转账（在合约内）
+    console.log("\n2️⃣ 测试合约内转账...");
+    const transferAmount = ethers.parseEther("0.1");
+    const transferTx = await transferDemo.transferTo(signer2.address, transferAmount);
+    await transferTx.wait();
+    console.log("  ✅ 转账成功:", ethers.formatEther(transferAmount), "ETH");
+    console.log("    从:", signer1.address);
+    console.log("    到:", signer2.address);
+
+    // 检查转账后余额
+    const balanceAfterTransfer1 = await transferDemo.getBalance(signer1.address);
+    const balanceAfterTransfer2 = await transferDemo.getBalance(signer2.address);
+    console.log("  账户1合约余额:", ethers.formatEther(balanceAfterTransfer1), "ETH");
+    console.log("  账户2合约余额:", ethers.formatEther(balanceAfterTransfer2), "ETH");
+
+    // 测试4: 直接ETH转账
+    console.log("\n3️⃣ 测试直接ETH转账...");
+    const directAmount = ethers.parseEther("0.05");
+    const directTx = await transferDemo.directTransfer(signer2.address, { value: directAmount });
+    await directTx.wait();
+    console.log("  ✅ 直接转账成功:", ethers.formatEther(directAmount), "ETH");
+
+    // 测试5: 取款
+    console.log("\n4️⃣ 测试取款功能...");
+    const withdrawAmount = ethers.parseEther("0.2");
+    const withdrawTx = await transferDemo.withdraw(withdrawAmount);
+    await withdrawTx.wait();
+    console.log("  ✅ 取款成功:", ethers.formatEther(withdrawAmount), "ETH");
+
+    // 最终余额检查
+    console.log("\n📊 最终余额统计:");
+    const finalBalance1 = await ethers.provider.getBalance(signer1.address);
+    const finalBalance2 = await ethers.provider.getBalance(signer2.address);
+    const finalContractBalance = await ethers.provider.getBalance(contractAddress);
+
+    console.log("  账户1余额:", ethers.formatEther(finalBalance1), "ETH");
+    console.log("  账户2余额:", ethers.formatEther(finalBalance2), "ETH");
+    console.log("  合约余额:", ethers.formatEther(finalContractBalance), "ETH");
+
+    // 合约状态检查
+    console.log("\n📋 合约状态:");
+    const contractStateBalance = await transferDemo.getContractBalance();
+    const user1StateBalance = await transferDemo.getBalance(signer1.address);
+    const user2StateBalance = await transferDemo.getBalance(signer2.address);
+
+    console.log("  合约记录的总余额:", ethers.formatEther(contractStateBalance), "ETH");
+    console.log("  合约记录的账户1余额:", ethers.formatEther(user1StateBalance), "ETH");
+    console.log("  合约记录的账户2余额:", ethers.formatEther(user2StateBalance), "ETH");
+
+    console.log("\n🎉 所有测试完成!");
+}
+
+main().catch((error) => {
+    console.error("❌ 错误:", error);
+    process.exitCode = 1;
+});

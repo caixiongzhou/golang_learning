@@ -1,0 +1,38 @@
+const { ethers } = require("hardhat");
+
+async function main() {
+  console.log("开始测试交互...");
+  
+  // 方式1：使用 Hardhat 内置的提供者和签名者（推荐）
+  const [signer] = await ethers.getSigners();
+  console.log("钱包地址:", signer.address);
+  
+  // 检查余额
+  const balance = await signer.provider.getBalance(signer.address);
+  console.log("账户余额:", ethers.formatEther(balance), "ETH");
+  
+  // 部署合约
+  const SimpleStorage = await ethers.getContractFactory("SimpleStorage");
+  const simpleStorage = await SimpleStorage.deploy();
+  await simpleStorage.waitForDeployment();
+  
+  const contractAddress = await simpleStorage.getAddress();
+  console.log("合约部署地址:", contractAddress);
+
+  // 获取初始值
+  const valueFirst = await simpleStorage.get();
+  console.log("初始存储的值:", valueFirst.toString());
+  
+  // 与合约交互 - 设置新值
+  const setTx = await simpleStorage.set(42);
+  await setTx.wait();
+
+  // 获取设置后的值
+  const valueSecond = await simpleStorage.get();
+  console.log("设置后的存储值:", valueSecond.toString());
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
