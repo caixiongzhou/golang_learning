@@ -1,0 +1,23 @@
+{
+  "name": "我的第一个 Hardhat NFT",
+  "description": "使用 Hardhat 在 Sepolia 测试网创建的 NFT",
+  "image": "ipfs://bafybeiaqx3v7k4zphvv5d7bjbbzkmyconsnqmoyz5kv6wqnvwks6w6h5pm/nft-image.png",
+  "attributes": [
+    {
+      "trait_type": "创作者",
+      "value": "蔡雄宙"
+    },
+    {
+      "trait_type": "创建工具",
+      "value": "Hardhat"
+    },
+    {
+      "trait_type": "网络",
+      "value": "Sepolia"
+    },
+    {
+      "trait_type": "发行日期",
+      "value": "2025-11-26"
+    }
+  ]
+}
